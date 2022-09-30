@@ -4,7 +4,6 @@ import { Box } from '@mui/material';
 const styles = {
   container: {
     width: '100%',
-    height: 'calc(100vh - 120px)',
     marginInline: 'auto',
     display: 'flex', 
     justifyContent: 'space-between', 
@@ -16,13 +15,16 @@ const styles = {
 }
 
 type Props = {
-  children?: JSX.Element | JSX.Element[]
+  children?: JSX.Element | JSX.Element[],
+  defaultHeight?: boolean,
 }
 
 function Main(props: Props) {
+  const { children, defaultHeight } = props;
+  const height = defaultHeight ? 'calc(100vh - 120px)' : '100vh';
   return (
-    <Box sx={ styles.container } component='main'>     
-      {props.children}
+    <Box sx={ styles.container } component='main' height={height}>     
+      {children}
     </Box>
   );
 }

@@ -9,7 +9,7 @@ function Home() {
   return (
     <Layout>
       <Header/>
-      <Main />
+      <Main defaultHeight={true}/>
       <Footer/>
     </Layout>    
   );

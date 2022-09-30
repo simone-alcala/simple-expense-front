@@ -97,7 +97,7 @@ function SignUp() {
 
         <Form onSubmit={handleSubmit} justify='center'>
 
-          <Typography variant='h5' component='h5' textAlign={'center'}>
+          <Typography variant='h4' component='h4' textAlign={'center'}>
             Create account
           </Typography>
 
