@@ -2,13 +2,11 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Button, TextField, Typography } from '@mui/material';
 
-import { signUp } from '../../services/api/AuthApi';
+import { signIn } from '../../services/api/AuthApi';
 
 import Layout from '../../components/Layout';
-import Header from '../../components/Header';
 import Main   from '../../components/Main';
 import Form   from '../../components/Form';
-import Footer from '../../components/Footer';
 
 const styles = {
   input: { 
@@ -36,13 +34,10 @@ const styles = {
 
 type FormDataType = {
   email: string,
-  firstName: string,
-  lastName: string,
   password: string,
-  confirmPassword: string
 }
 
-function SignUp() {
+function SignIn() {
 
   const navigate = useNavigate();
 
@@ -50,10 +45,7 @@ function SignUp() {
 
   const [formData, setFormData] = useState<FormDataType>({ 
     email: '',
-    firstName: '',
-    lastName: '',
     password: '',
-    confirmPassword: ''
   });
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
@@ -63,26 +55,21 @@ function SignUp() {
     });
   }
 
-  function redirectSignIn(){
-    navigate('/sign-in');
+  function redirectSignUp(){
+    navigate('/sign-up');
   }
 
   async function handleSubmit(event: FormEvent) {
     setDisableButton(true);
     event.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert('Password and confirm password do not match');
-      setDisableButton(false);
-      return;
-    }
     await sendInfo();
   }
 
   async function sendInfo() {
-    const { email, password, firstName, lastName } = formData;
+    const { email, password } = formData;
     try {
-      await signUp({ email, password, firstName, lastName });    
-      redirectSignIn();
+      await signIn({ email, password }); 
+      navigate('/');  
     } catch (err: any) {
       console.log(err);
       alert(`${err.response.data || err.message}`);
@@ -98,29 +85,13 @@ function SignUp() {
         <Form onSubmit={handleSubmit} justify='center'>
 
           <Typography variant='h5' component='h5' textAlign={'center'}>
-            Create account
+            Sign in
           </Typography>
 
           <TextField sx={styles.input} id='email' 
             name='email' 
             label='Email' 
             value={formData.email} 
-            onChange={handleInputChange}   
-            required
-          />
-        
-          <TextField sx={styles.input} id='firstName' 
-            name='firstName' 
-            label='First name' 
-            value={formData.firstName} 
-            onChange={handleInputChange}   
-            required
-          />
-
-          <TextField sx={styles.input} id='lastName' 
-            name='lastName' 
-            label='Last name' 
-            value={formData.lastName} 
             onChange={handleInputChange}   
             required
           />
@@ -134,22 +105,13 @@ function SignUp() {
             required
           />
 
-          <TextField sx={styles.input} id='confirmPassword' 
-            name='confirmPassword' 
-            label='Confirm password' 
-            value={formData.confirmPassword} 
-            onChange={handleInputChange}  
-            type="password"
-            required 
-          />
-
           <Box sx={styles.buttons}>
             <Typography sx={styles.link} 
               variant='overline' 
               component='h6' 
-              onClick={redirectSignIn}
+              onClick={redirectSignUp}
             >
-              Sign in instead
+              Create account
             </Typography>
 
             <Button sx={styles.button} 
@@ -158,7 +120,7 @@ function SignUp() {
               type='submit' 
               disabled={disableButton}
             >
-              Sign up
+              Login
             </Button>
           </Box>
 
@@ -171,4 +133,4 @@ function SignUp() {
   );
 }
 
-export default SignUp;
+export default SignIn;

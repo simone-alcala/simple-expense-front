@@ -21,7 +21,6 @@ function Form(props: Props) {
 
   const { onSubmit: handleSubmit, children, align, justify } = props;
 
-
   return (
     <Box 
       sx={ styles.container } 
