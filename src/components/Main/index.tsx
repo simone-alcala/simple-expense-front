@@ -11,6 +11,7 @@ const styles = {
     alignItems: 'center', 
     color: '#4F4E4E',
     padding: '10px',
+    flexDirection: 'column',
   },
 }
 
