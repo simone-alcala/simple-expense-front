@@ -1,12 +1,23 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, MenuItem, TextField, Typography } from '@mui/material';
 import { useAuth } from '../../contexts/AuthProvider';
-import { signIn } from '../../services/api/AuthApi';
+import { create } from '../../services/api/ExpenseApi';
 
 import Layout from '../../components/Layout';
+import Header from '../../components/Header';
 import Main   from '../../components/Main';
 import Form   from '../../components/Form';
+import Footer from '../../components/Footer';
+
+const expenseTypes = [
+  'ACCOMMODATION',
+  'CLEANING',
+  'OFFICE',
+  'MEAL',
+  'TRANSPORT',
+  'OTHER' 
+];
 
 const styles = {
   input: { 
@@ -33,32 +44,31 @@ const styles = {
 }
 
 type FormDataType = {
-  email: string,
-  password: string,
+  description: string,
+  type: string,
 }
 
-function SignIn() {
+function Expense() {
 
   const navigate = useNavigate();
-
-  const { login } = useAuth();
+  const { getToken } = useAuth();
 
   const [disableButton, setDisableButton] = useState(false);
 
   const [formData, setFormData] = useState<FormDataType>({ 
-    email: '',
-    password: '',
+    description: '',
+    type: '',
   });
+
+  function listExpenses(){
+    navigate('/expenses');
+  }
 
   function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
     setFormData({
       ...formData,
       [event.target.name]: event.target.value,
     });
-  }
-
-  function redirectSignUp(){
-    navigate('/sign-up');
   }
 
   async function handleSubmit(event: FormEvent) {
@@ -68,53 +78,61 @@ function SignIn() {
   }
 
   async function sendInfo() {
-    const { email, password } = formData;
+    const { description, type } = formData;
     try {
-      const result = await signIn({ email, password }); 
-      login(result.data.token);
-      navigate('/');  
+      const token = getToken() || '';
+      await create({ description, type }, token);    
+      listExpenses();
     } catch (err: any) {
       console.log(err);
       alert(`${err.response.data || err.message}`);
-      setDisableButton(false);
     }
+    setDisableButton(false);
   }
 
   return (
     <Layout>
 
-      <Main>
+      <Header />
+
+      <Main defaultHeight={true}>
 
         <Form onSubmit={handleSubmit} justify='center'>
 
           <Typography variant='h4' component='h4' textAlign={'center'}>
-            Sign in
+            Create expense
           </Typography>
 
-          <TextField sx={styles.input} id='email' 
-            name='email' 
-            label='Email' 
-            value={formData.email} 
+          <TextField sx={styles.input} id='description' 
+            name='description' 
+            label='Description' 
+            value={formData.description} 
             onChange={handleInputChange}   
             required
           />
-        
-          <TextField sx={styles.input} id='password' 
-            name='password' 
-            label='Password' 
-            value={formData.password} 
-            onChange={handleInputChange}   
-            type="password"
+
+          <TextField sx={styles.input} id='type'
+            select
+            name='type' 
+            label='Type'
+            value={formData.type}
+            onChange={handleInputChange}
             required
-          />
+          >
+            {expenseTypes.map((expenseType) => (
+              <MenuItem key={expenseType} value={expenseType}>
+                {expenseType}
+              </MenuItem>
+            ))}
+          </TextField>
 
           <Box sx={styles.buttons}>
             <Typography sx={styles.link} 
               variant='overline' 
               component='h6' 
-              onClick={redirectSignUp}
+              onClick={listExpenses}
             >
-              Create account
+              List expenses
             </Typography>
 
             <Button sx={styles.button} 
@@ -123,7 +141,7 @@ function SignIn() {
               type='submit' 
               disabled={disableButton}
             >
-              Login
+              Add
             </Button>
           </Box>
 
@@ -131,9 +149,11 @@ function SignIn() {
 
       </Main>
 
+      <Footer />
+
     </Layout>    
 
   );
 }
 
-export default SignIn;
+export default Expense;

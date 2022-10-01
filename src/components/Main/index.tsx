@@ -6,7 +6,7 @@ const styles = {
     width: '100%',
     marginInline: 'auto',
     display: 'flex', 
-    justifyContent: 'space-between', 
+    //justifyContent: 'space-between', 
     alignItems: 'center', 
     color: '#4F4E4E',
     padding: '10px',
@@ -17,13 +17,15 @@ const styles = {
 type Props = {
   children?: JSX.Element | JSX.Element[],
   defaultHeight?: boolean,
+  align?: 'center' | 'start'
 }
 
 function Main(props: Props) {
-  const { children, defaultHeight } = props;
+  const { children, defaultHeight, align } = props;
   const height = defaultHeight ? 'calc(100vh - 120px)' : '100vh';
+  const justifyContent = align ? align : 'center';
   return (
-    <Box sx={ styles.container } component='main' height={height}>     
+    <Box sx={ styles.container } component='main' height={height} justifyContent={justifyContent}>     
       {children}
     </Box>
   );
