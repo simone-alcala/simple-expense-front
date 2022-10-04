@@ -12,6 +12,15 @@ type requestItem = {
   receipt?: string;
 }
 
+type requestItems = {
+  id: number;
+  expense: string;
+  amount: number;
+  date: string;
+  observation?: string;
+  receipt?: string;
+}
+
 type createRequest = Omit<requestItem,'id' | 'requestId'>;
 
 export async function create(data: createRequest, requestId: number, token: string) : 
@@ -30,5 +39,10 @@ export async function create(data: createRequest, requestId: number, token: stri
 export async function findByIdAll(id: number, token: string) : Promise<AxiosResponse<requestItem[]>> {
   const bearer = getBearerToken(token);
   return await axiosConfig.get(`/request-items/item/${id}`, bearer);
+}
+
+export async function findByRequestIdAll(requestId: number, token: string) : Promise<AxiosResponse<requestItems[]>> {
+  const bearer = getBearerToken(token);
+  return await axiosConfig.get(`/request-items/items/${requestId}`, bearer);
 }
 
