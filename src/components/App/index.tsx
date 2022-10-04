@@ -10,6 +10,10 @@ import SignUp from '../../pages/SignUp';
 import SignIn from '../../pages/SignIn';
 import Expenses from '../../pages/Expenses';
 import Expense from '../../pages/Expense';
+import Requests from '../../pages/Requests';
+import Request from '../../pages/Request';
+import RequestItems from '../../pages/Request';
+import RequestItem from '../../pages/RequestItem';
 
 function App() {
   return (
@@ -22,8 +26,13 @@ function App() {
           <Route path='/sign-in' element={<SignIn/>}/>
 
           <Route path='/expenses' element={<Expenses/>}/>
-
           <Route path='/expenses/add' element={<Expense/>}/>
+
+          <Route path='/requests' element={<Requests/>}/>
+          <Route path='/requests/add' element={<Request/>}/>
+          
+          <Route path='/requests/:id/items' element={<RequestItems/>}/>
+          <Route path='/requests/:id/items/add' element={<RequestItem/>}/>
           
         </Routes>
       </BrowserRouter>
