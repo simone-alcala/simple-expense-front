@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { useAuth } from '../../contexts/AuthProvider';
-import { findByRequestIdAll } from '../../services/api/RequestItemApi';
+import { findByRequestIdAll, sendRequestToApproval } from '../../services/api/RequestItemApi';
 
 import Layout from '../../components/Layout';
 import Header from '../../components/Header';
@@ -52,10 +52,11 @@ function RequestItems() {
   const { id: requestId } = useParams();
   const navigate = useNavigate();
   const { getToken } = useAuth();
+  const token = getToken() || '';
 
   const [requestItemList, setRequestItemList] = useState<requestItemListType[]>([]);
 
-  function redirectRequests(){
+  function redirectRequests() {
     navigate('/requests');
   }
 
@@ -64,11 +65,15 @@ function RequestItems() {
   }
 
   function sendToApproval(){
-    alert('testing');
+    const promise = sendRequestToApproval(requestId as string, token);
+    promise.then((res) => redirectRequests());
+    promise.catch((err) => {
+      console.log(err);
+      alert(`${err.response.data || err.message}`);
+    });
   }
 
   useEffect(() => {
-    const token = getToken() || '';
     const promise = findByRequestIdAll(Number(requestId), token);
     promise.then((res) => {
       const info: any[] = [];

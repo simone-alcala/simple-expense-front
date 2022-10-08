@@ -14,6 +14,7 @@ import Requests from '../../pages/Requests';
 import Request from '../../pages/Request';
 import RequestItems from '../../pages/RequestItems';
 import RequestItem from '../../pages/RequestItem';
+import Approvals from '../../pages/Approvals';
 
 function App() {
   return (
@@ -34,6 +35,8 @@ function App() {
           <Route path='/requests/:id/items' element={<RequestItems/>}/>
           <Route path='/requests/:id/items/add' element={<RequestItem/>}/>
           
+          <Route path='/approvals' element={<Approvals/>}/>
+
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -46,3 +46,11 @@ export async function findByRequestIdAll(requestId: number, token: string) : Pro
   return await axiosConfig.get(`/request-items/items/${requestId}`, bearer);
 }
 
+export async function sendRequestToApproval(requestId: string, token: string) {
+  const bearer = getBearerToken(token);
+  const data = {
+    status: "sent"
+  }
+  return await axiosConfig.patch(`/requests/${requestId}`, data, bearer);
+}
+

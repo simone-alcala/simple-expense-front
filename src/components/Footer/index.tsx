@@ -18,7 +18,7 @@ function Footer() {
   return (
     <Box sx={ styles.container } component='footer'>     
       <Typography variant='caption' component='caption'> 
-        Testando footer 
+        &#127279; Simone Alcala
       </Typography> 
     </Box>
   );
