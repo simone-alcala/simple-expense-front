@@ -92,6 +92,10 @@ function RequestItems() {
     }
   }
 
+  function redirectItemEdit(itemId: number) {
+    navigate(`/requests/${requestId}/items/${itemId}/edit`, { replace: true } );
+  }
+
   useEffect(() => {
     getItemsInfo();
     getRequestInfo();
@@ -173,7 +177,7 @@ function RequestItems() {
                   <TableCell align='center'> {
                     (status !== 'OPEN' && status !== 'REVIEW') ? 
                       <EditOffOutlinedIcon/> : 
-                      <EditOutlinedIcon sx={{ cursor: 'pointer' }} onClick={() => alert('criar tela de edit')}/>
+                      <EditOutlinedIcon sx={{ cursor: 'pointer' }} onClick={() => redirectItemEdit(item.id)}/>
                     }   
                   </TableCell>
 

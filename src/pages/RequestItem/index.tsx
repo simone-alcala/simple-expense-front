@@ -1,11 +1,12 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, MenuItem, TextField, Typography } from '@mui/material';
+import { Box, Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField, Typography } from '@mui/material';
 import { PhotoCamera } from '@mui/icons-material';
 import dayjs, { Dayjs } from 'dayjs';
 
 import { useAuth } from '../../contexts/AuthProvider';
 import { create } from '../../services/api/RequestItemApi';
+import { findAll } from '../../services/api/ExpenseApi';
 
 import Layout from '../../components/Layout';
 import Header from '../../components/Header';
@@ -46,11 +47,17 @@ const styles = {
 }
 
 type FormDataType = {
-  expenseId: number | null;
+  expenseId: number | null | string;
   amount: number | null;
   date: string | null;
   observation?: string;
   receipt?: string;
+}
+
+type listExpenses = {
+  id: number;
+  description: string;
+  type: string;
 }
 
 function RequestItem() {
@@ -58,10 +65,12 @@ function RequestItem() {
   const { id: requestId } = useParams();
   const navigate = useNavigate();
   const { getToken } = useAuth();
+  const token = getToken() || '';
+
   const [date, setDate] = useState<Dayjs | null>(null);
-
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [expenses, setExpenses] = useState<listExpenses[]>([]);
   const [disableButton, setDisableButton] = useState(false);
-
   const [formData, setFormData] = useState<FormDataType>({ 
     expenseId: null,
     amount: null,
@@ -95,17 +104,17 @@ function RequestItem() {
       ...formData,
       receipt: '',
     });
+    setFileName(null);
     
     const files = event.target.files as FileList; 
     const file = files[0];
-    let fileName = '';
     let fileSize = 0;
     let fileType = '';
     let base64: string | ArrayBuffer | null | undefined;
 
     if (files.length > 0) {
 
-      fileName = file.name;
+      setFileName(file.name);
       fileSize = file.size;
       fileType = file.type;
 
@@ -127,6 +136,13 @@ function RequestItem() {
     
   }
 
+  function handleSelectChange(event: SelectChangeEvent) {
+    setFormData({
+      ...formData,
+      [event.target.name]: event.target.value,
+    });
+  }
+
   async function handleSubmit(event: FormEvent) {
     setDisableButton(true);
     event.preventDefault();
@@ -136,21 +152,38 @@ function RequestItem() {
   async function sendInfo() {
     const { expenseId, amount, date, observation, receipt } = formData;
     try {
-      const token = getToken() || '';
-      await create({ expenseId: Number(expenseId), amount: Number(amount), date: date as string, observation, receipt }, Number(requestId), token);  
-      setFormData({
-        expenseId: null,
-        amount: null,
-        date: null,
-        observation: '',
-        receipt: ''
-      })
+      await create({
+        expenseId: Number(expenseId), 
+        amount: Number(amount), 
+        date: date as string, 
+        observation, receipt 
+      }, Number(requestId), token);  
+      resetForm()
     } catch (err: any) {
       console.log(err);
       alert(`${err.response.data || err.message}`);
     }
     setDisableButton(false);
   }
+
+  function resetForm() {
+    setFormData({
+      ...formData,
+      expenseId: null,
+      amount: 0,
+      date: null,
+      observation: '',
+      receipt: ''
+    });
+  
+    setDate(null);
+  }
+
+  useEffect(() => {
+    const promise = findAll(token);
+    promise.then(res => setExpenses([...res.data]));
+    promise.catch(err => console.log(err));
+  },[])
 
   return (
     <Layout>
@@ -172,13 +205,25 @@ function RequestItem() {
             onChange={handleInputDate} 
           />
 
-          <TextField sx={styles.input} id='expenseId' 
-            name='expenseId' 
-            label='Expense' 
-            value={formData.expenseId} 
-            onChange={handleInputChange}   
-            required
-          />
+          <FormControl sx={styles.input} variant='outlined' required>
+
+            <InputLabel id='expense' variant='outlined'>
+              Expense
+            </InputLabel>
+
+            <Select name='expenseId' labelId='expense' 
+              value={ formData.expenseId?.toString() } 
+              onChange={handleSelectChange} 
+              defaultValue={''}
+            >
+              <MenuItem value=''></MenuItem> 
+              
+              {expenses?.map( (expense, index) => 
+                <MenuItem key={index} value={expense.id}>{expense.description}</MenuItem> 
+              )}
+
+            </Select>
+          </FormControl>
 
           <TextField sx={styles.input} id='amount' 
             name='amount' 
@@ -197,8 +242,11 @@ function RequestItem() {
           />
 
           <Box>
-            <Button sx={styles.upload} variant='contained' component='label' color='secondary'>
-              <PhotoCamera sx={styles.icon}/>Upload receipt  
+            <Button sx={styles.upload} variant='contained' component='label' color={fileName === null ? 'warning' : 'success'}>
+              {fileName === null ?
+                <> <PhotoCamera sx={styles.icon}/> Upload receipt </> :
+                <> <PhotoCamera sx={styles.icon}/> {fileName} </>
+              }
               <input type='file' hidden accept='image/*' id='receipt' name='receipt' onChange={handleFileChange}/>
             </Button>
           </Box>
@@ -227,7 +275,7 @@ function RequestItem() {
       </Main>
 
       <Footer />
-
+      
     </Layout>    
 
   );

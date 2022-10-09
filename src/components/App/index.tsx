@@ -15,6 +15,7 @@ import Request from '../../pages/Request';
 import RequestItems from '../../pages/RequestItems';
 import RequestItem from '../../pages/RequestItem';
 import Approvals from '../../pages/Approvals';
+import RequestItemEdit from '../../pages/RequestItemEdit';
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           
           <Route path='/requests/:id/items' element={<RequestItems/>}/>
           <Route path='/requests/:id/items/add' element={<RequestItem/>}/>
+          <Route path='/requests/:id/items/:itemId/edit' element={<RequestItemEdit/>}/>
           
           <Route path='/approvals' element={<Approvals/>}/>
 
