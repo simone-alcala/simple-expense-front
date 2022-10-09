@@ -4,12 +4,11 @@ import { axiosConfig, getBearerToken } from './Api';
 type listRequests = {
   id: number;
   description: string;
-  createdDate: Date;
+  createdDate: string;
   status: string;
   amount: number;
   requesterId: number;
-  requestItems: any[];
-  approvals: any[];
+  approverComment: string;
 }
 
 type requestByStatus = {
@@ -31,6 +30,15 @@ type requestByStatus = {
   }[];
 }
 
+type requestType = {
+  id: number;
+  description: string;
+  amount: number;
+  createdDate: string;
+  status: string;
+  requesterId: number;
+}
+
 type createRequest = { description: string };
 
 export async function create(data: createRequest, token: string) :  Promise<AxiosResponse<{requestId: number}>> {
@@ -48,3 +56,7 @@ export async function findByStatus(status: string, token: string) : Promise<Axio
   return await axiosConfig.get(`/requests/status/${status}`, bearer);
 }
 
+export async function findById(requestId: string, token: string) : Promise<AxiosResponse<requestType>> {
+  const bearer = getBearerToken(token);
+  return await axiosConfig.get(`/requests/${requestId}`, bearer);
+}

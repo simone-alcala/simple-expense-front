@@ -1,5 +1,4 @@
 import { AxiosResponse } from 'axios';
-import dayjs from 'dayjs';
 import { axiosConfig, getBearerToken } from './Api';
 
 type requestItem = {
@@ -17,8 +16,9 @@ type requestItems = {
   expense: string;
   amount: number;
   date: string;
-  observation?: string;
-  receipt?: string;
+  observation: string;
+  receipt: string;
+  status: string;
 }
 
 type createRequest = Omit<requestItem,'id' | 'requestId'>;

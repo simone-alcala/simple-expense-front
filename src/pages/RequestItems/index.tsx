@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+
 import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+
+import ImageNotSupportedOutlinedIcon from '@mui/icons-material/ImageNotSupportedOutlined';
+import ImageSearchIcon from '@mui/icons-material/ImageSearch';
+import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+
 import { useAuth } from '../../contexts/AuthProvider';
+import { findById } from '../../services/api/RequestApi';
 import { findByRequestIdAll, sendRequestToApproval } from '../../services/api/RequestItemApi';
 
 import Layout from '../../components/Layout';
@@ -44,7 +52,8 @@ type requestItemListType = {
   expense: string,
   amount: number,
   observation: string,
-  receipt: 'sim' | 'não',
+  receipt: string,
+  status: string,
 }
 
 function RequestItems() {
@@ -55,6 +64,7 @@ function RequestItems() {
   const token = getToken() || '';
 
   const [requestItemList, setRequestItemList] = useState<requestItemListType[]>([]);
+  const [status, setStatus] = useState('');
 
   function redirectRequests() {
     navigate('/requests');
@@ -73,27 +83,33 @@ function RequestItems() {
     });
   }
 
+  function showReceipt(receipt: string) {
+    const newTab = window.open();
+    if (newTab !== null) {
+      newTab.document.body.innerHTML = `<img src=${receipt} style="height: 100%;">`;
+    } else {
+      alert('Receipt is unavailable');
+    }
+  }
+
   useEffect(() => {
+    getItemsInfo();
+    getRequestInfo();
+  }, []);
+
+  function getItemsInfo() {
     const promise = findByRequestIdAll(Number(requestId), token);
-    promise.then((res) => {
-      const info: any[] = [];
-      const { data } = res;
-      data.map( item => {
-        info.push({
-          id: item.id,
-          date: item.date,
-          expense: item.expense,
-          amount: item.amount,
-          observation: item.observation,
-          receipt: item.receipt ? 'sim' : 'não',
-        })
-      });
-      
-      setRequestItemList([...info])
-    
-    });
-    
-  }, [])
+    promise.then((res) => setRequestItemList([...res.data]));
+    promise.catch((err) => console.log(err));
+  }
+
+  function getRequestInfo() {
+    if (requestId) {
+      const promise = findById(requestId, token);
+      promise.then((res) => setStatus(res.data.status));
+      promise.catch((err) => console.log(err));
+    }
+  }
  
   return (
     <Layout>
@@ -108,37 +124,67 @@ function RequestItems() {
 
         <TableContainer component={Paper}>
 
-          <Table sx={{ minWidth: 300 }} aria-label="simple table">
+          <Table>
           
             <TableHead>
 
               <TableRow>
-                <TableCell>Date       </TableCell>
-                <TableCell>Expense    </TableCell>
-                <TableCell>Amount     </TableCell>
-                <TableCell>Observation</TableCell>
-                <TableCell>Receipt    </TableCell>
+                <TableCell> Request: {requestId} </TableCell>
+                <TableCell> Status: {status} </TableCell>
+                
+                <TableCell> </TableCell>
+                <TableCell> </TableCell>
+                <TableCell> </TableCell>
+                <TableCell> </TableCell>
+                
+              </TableRow>
+
+              <TableRow>
+
+                <TableCell>               Date       </TableCell>
+                <TableCell>               Expense    </TableCell>
+                <TableCell align='right'> Amount     </TableCell>
+                <TableCell>               Observation</TableCell>
+                <TableCell align='center'>Receipt    </TableCell>
+                <TableCell align='center'>Edit       </TableCell>
+
               </TableRow>
 
             </TableHead>
           
             <TableBody> 
+
               {requestItemList?.map((item) => ( 
 
                 <TableRow key={item.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
 
-                  <TableCell > {item.date}        </TableCell>
-                  <TableCell > {item.expense}     </TableCell>
-                  <TableCell > {item.amount}      </TableCell>
-                  <TableCell > {item.observation} </TableCell>
-                  <TableCell>  {item.receipt}     </TableCell>
+                  <TableCell >                {item.date}        </TableCell>
+                  <TableCell >                {item.expense}     </TableCell>
+                  <TableCell align='right'>   {item.amount}      </TableCell>
+                  <TableCell >                {item.observation} </TableCell>
+
+                  <TableCell align='center'> {
+                    item.receipt === '' || item.receipt === null ? 
+                      <ImageNotSupportedOutlinedIcon/> : 
+                      <ImageSearchIcon sx={{ cursor:  'pointer' }} onClick={() => showReceipt(item.receipt)}/>
+                    }   
+                  </TableCell>
+
+                  <TableCell align='center'> {
+                    (status !== 'OPEN' && status !== 'REVIEW') ? 
+                      <EditOffOutlinedIcon/> : 
+                      <EditOutlinedIcon sx={{ cursor: 'pointer' }} onClick={() => alert('criar tela de edit')}/>
+                    }   
+                  </TableCell>
 
                 </TableRow>
 
               ))}
 
             </TableBody>
+
           </Table>
+
         </TableContainer>
 
         <Box sx={styles.buttons}>
@@ -155,19 +201,21 @@ function RequestItems() {
             color='primary' 
             component='label'
             onClick={addRequestItem}
+            disabled={ status !== 'OPEN' }
           >
             New item
           </Button>
         </Box>
 
         <Button sx={styles.send} 
-            variant='contained' 
-            color='success' 
-            component='label'
-            onClick={sendToApproval}
-          >
-            Send to approval
-          </Button>
+          variant='contained' 
+          color='success' 
+          component='label'
+          onClick={sendToApproval}
+          disabled={ !(status === 'OPEN' || status === 'REVIEW') }
+        >
+          Send to approval
+        </Button>
 
       </Main>
 

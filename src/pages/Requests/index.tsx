@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useAuth } from '../../contexts/AuthProvider';
 import { findAll } from '../../services/api/RequestApi';
 
@@ -30,14 +31,20 @@ const styles = {
     marginTop: 1, 
     textDecoration: 'underline',
     cursor: 'pointer'
+  },
+  items: {
+    cursor: 'pointer',
   }
 }
 
 type requestListType = { 
   id: number,
-  date: string,
+  createdDate: string,
   amount: number,
   status: string,
+  description: string,
+  requesterId: number,
+  approverComment: string,
 }
 
 function Requests() {
@@ -51,6 +58,10 @@ function Requests() {
     navigate('/');
   }
 
+  function openItems(requestId: number){
+    navigate(`/requests/${requestId}/items`);
+  }
+
   function addRequest(){
     navigate('/requests/add');
   }
@@ -58,20 +69,8 @@ function Requests() {
   useEffect(() => {
     const token = getToken() || '';
     const promise = findAll(token);
-    promise.then((res) => {
-      const info: any[] = [];
-      const { data } = res;
-      data.map( item => {
-        info.push({
-          id: item.id,
-          date: item.createdDate,
-          amount: item.amount,
-          status: item.status,
-        })
-      });
-      
-      setRequestList([...info])
-    });
+    promise.then((res) => setRequestList([...res.data]));
+    promise.catch((err) => console.log(err));
 
   }, [])
  
@@ -88,15 +87,18 @@ function Requests() {
 
         <TableContainer component={Paper}>
 
-          <Table sx={{ minWidth: 300 }} aria-label="simple table">
+          <Table>
           
             <TableHead>
 
               <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Date</TableCell>
-                <TableCell>Amount</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell align='center'>ID          </TableCell>
+                <TableCell>               Date        </TableCell>
+                <TableCell>               Description </TableCell>
+                <TableCell align='right'> Amount      </TableCell>
+                <TableCell>               Status      </TableCell>
+                <TableCell>               Approver Comment      </TableCell>
+                <TableCell align='center'>Items       </TableCell>
               </TableRow>
 
             </TableHead>
@@ -106,10 +108,15 @@ function Requests() {
 
                 <TableRow key={item.id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }} >
 
-                  <TableCell > {item.id}      </TableCell>
-                  <TableCell > {item.date}    </TableCell>
-                  <TableCell > {item.amount}  </TableCell>
-                  <TableCell > {item.status}  </TableCell>
+                  <TableCell align='center'>{item.id}         </TableCell>
+                  <TableCell >              {item.createdDate}</TableCell>
+                  <TableCell >              {item.description}</TableCell>
+                  <TableCell align='right'> {item.amount}     </TableCell>
+                  <TableCell >              {item.status}     </TableCell>
+                  <TableCell >              {item.approverComment}     </TableCell>
+                  <TableCell align='center'>              
+                    <KeyboardArrowRightIcon sx={ styles.items } onClick={()=>openItems(item.id)}/>     
+                  </TableCell>
 
                 </TableRow>
 
