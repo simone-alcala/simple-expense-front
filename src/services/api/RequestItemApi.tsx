@@ -22,7 +22,7 @@ type requestItems = {
   status: string;
 }
 
-type createRequest = Omit<requestItem,'id' | 'requestId'>;
+type createRequest = Omit<requestItem,'id' | 'requestId' | 'status'>;
 
 type updateItem = {
   expenseId: number;
@@ -73,3 +73,7 @@ export async function updateItem(data: updateItem, requestId: string, itemId: st
   return await axiosConfig.put(`/request-items/items/${requestId}/${itemId}`, data, bearer);
 }
 
+export async function deleteByItemId(requestId: string, itemId: string, token: string) {
+  const bearer = getBearerToken(token);
+  return await axiosConfig.delete(`/request-items/items/${requestId}/${itemId}`, bearer);
+}

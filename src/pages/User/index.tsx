@@ -120,11 +120,11 @@ function User() {
 
             <TextField sx={styles.input} id='email' label='email' value={userInfo?.email} disabled />
 
-            <FormControl sx={styles.input} variant='outlined' required>
+            <FormControl sx={styles.input} variant='outlined' required >
 
               <InputLabel id='userType' variant='outlined'> Type </InputLabel>
 
-              <Select name='type' labelId='userType' value={ userInfo?.type } onChange={handleSelectChange}>
+              <Select name='type' labelId='userType' value={ userInfo?.type } onChange={handleSelectChange} label='Type'>
                 <MenuItem key={1} value={'ADMIN'}>    ADMIN   </MenuItem> 
                 <MenuItem key={2} value={'APPROVER'}> APPROVER</MenuItem> 
                 <MenuItem key={3} value={'USER'}>     USER    </MenuItem> 

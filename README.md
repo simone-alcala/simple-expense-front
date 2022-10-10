@@ -6,7 +6,6 @@
 ```yml 
 
  - npm install
-
  - npm run start
 
  ```

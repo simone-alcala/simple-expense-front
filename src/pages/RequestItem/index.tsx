@@ -146,7 +146,7 @@ function RequestItem() {
   async function handleSubmit(event: FormEvent) {
     setDisableButton(true);
     event.preventDefault();
-    await sendInfo();
+    await sendInfo();    
   }
 
   async function sendInfo() {
@@ -156,7 +156,8 @@ function RequestItem() {
         expenseId: Number(expenseId), 
         amount: Number(amount), 
         date: date as string, 
-        observation, receipt 
+        observation: observation as string, 
+        receipt : receipt as string
       }, Number(requestId), token);  
       resetForm()
     } catch (err: any) {
@@ -177,6 +178,8 @@ function RequestItem() {
     });
   
     setDate(null);
+    setFileName(null);
+
   }
 
   useEffect(() => {
@@ -205,26 +208,26 @@ function RequestItem() {
             onChange={handleInputDate} 
           />
 
-          <FormControl sx={styles.input} variant='outlined' required>
+          <FormControl sx={styles.input} variant='outlined' required >
 
             <InputLabel id='expense' variant='outlined'>
               Expense
             </InputLabel>
 
-            <Select name='expenseId' labelId='expense' 
-              value={ formData.expenseId?.toString() } 
-              onChange={handleSelectChange} 
-              defaultValue={''}
+            <Select name='expenseId' labelId='expense'  label='Expense'
+              value={formData.expenseId?.toString()} 
+              onChange={handleSelectChange}             
             >
-              <MenuItem value=''></MenuItem> 
+              <MenuItem key='0' value=''></MenuItem> 
               
-              {expenses?.map( (expense, index) => 
-                <MenuItem key={index} value={expense.id}>{expense.description}</MenuItem> 
+              {expenses?.map( (expense) => 
+                <MenuItem key={expense.id} value={expense.id.toString()}>{expense.description}</MenuItem> 
               )}
 
             </Select>
-          </FormControl>
 
+          </FormControl>
+  
           <TextField sx={styles.input} id='amount' 
             name='amount' 
             label='Amount' 

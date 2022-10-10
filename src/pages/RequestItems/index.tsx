@@ -7,10 +7,11 @@ import ImageNotSupportedOutlinedIcon from '@mui/icons-material/ImageNotSupported
 import ImageSearchIcon from '@mui/icons-material/ImageSearch';
 import EditOffOutlinedIcon from '@mui/icons-material/EditOffOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 import { useAuth } from '../../contexts/AuthProvider';
 import { findById } from '../../services/api/RequestApi';
-import { findByRequestIdAll, sendRequestToApproval } from '../../services/api/RequestItemApi';
+import { findByRequestIdAll, sendRequestToApproval, deleteByItemId } from '../../services/api/RequestItemApi';
 
 import Layout from '../../components/Layout';
 import Header from '../../components/Header';
@@ -114,6 +115,19 @@ function RequestItems() {
       promise.catch((err) => console.log(err));
     }
   }
+
+  function deleteItem(id: number) {
+    
+    const promise = deleteByItemId(requestId as string, id.toString(), token);
+    promise.then((res) => {
+      getItemsInfo();
+      getRequestInfo();
+    });
+    promise.catch((err) => {
+      console.log(err);
+      alert(`${err.response.data || err.message}`);
+    });    
+  }
  
   return (
     <Layout>
@@ -140,7 +154,8 @@ function RequestItems() {
                 <TableCell> </TableCell>
                 <TableCell> </TableCell>
                 <TableCell> </TableCell>
-                
+                <TableCell> </TableCell>
+
               </TableRow>
 
               <TableRow>
@@ -151,6 +166,7 @@ function RequestItems() {
                 <TableCell>               Observation</TableCell>
                 <TableCell align='center'>Receipt    </TableCell>
                 <TableCell align='center'>Edit       </TableCell>
+                <TableCell align='center'>Delete     </TableCell>
 
               </TableRow>
 
@@ -178,6 +194,13 @@ function RequestItems() {
                     (status !== 'OPEN' && status !== 'REVIEW') ? 
                       <EditOffOutlinedIcon/> : 
                       <EditOutlinedIcon sx={{ cursor: 'pointer' }} onClick={() => redirectItemEdit(item.id)}/>
+                    }   
+                  </TableCell>
+
+                  <TableCell align='center'> {
+                    (status !== 'OPEN' && status !== 'REVIEW') ? 
+                      <EditOffOutlinedIcon/> : 
+                      <RemoveCircleOutlineIcon sx={{ cursor: 'pointer' }} onClick={() => deleteItem(item.id)}/>
                     }   
                   </TableCell>
 

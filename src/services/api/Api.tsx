@@ -4,7 +4,7 @@ const DEV = 'http://localhost:5000';
 const PROD = 'https://simple-expense.herokuapp.com';
 
 export const axiosConfig = axios.create({
-  baseURL: PROD,
+  baseURL: DEV,
   timeout: 3000,  
 });
 

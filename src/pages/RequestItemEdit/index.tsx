@@ -229,7 +229,7 @@ function RequestItemEdit() {
                 Expense
               </InputLabel>
 
-              <Select name='expenseId' labelId='expense' 
+              <Select name='expenseId' labelId='expense'  label='expense'
                 value={ formData.expenseId?.toString() } 
                 onChange={handleSelectChange} 
                 defaultValue={defaultExpense}
