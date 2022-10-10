@@ -31,7 +31,7 @@ const styles = {
   icon: {
     fontSize: '40px',
     marginRight: '10px',
-  }
+  },
 }
 
 type Props = {
@@ -41,7 +41,9 @@ type Props = {
 function Header(props: Props) {
 
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, getName } = useAuth();
+
+  const userName = `Hello, ${getName()}!`;
 
   const [items, setItems] = useState<null | HTMLElement>(null);
 
@@ -76,6 +78,13 @@ function Header(props: Props) {
       </Box>
 
       <Box>
+        <Typography variant='h6' component='h6'> 
+           {userName}
+        </Typography>
+      </Box>
+      
+      <Box>
+  
         <div>
           <Button
             id='button'

@@ -71,7 +71,7 @@ function SignIn() {
     const { email, password } = formData;
     try {
       const result = await signIn({ email, password }); 
-      login(result.data.token);
+      login({ token: result.data.token, name: result.data.name });
       navigate('/');  
     } catch (err: any) {
       console.log(err);

@@ -5,6 +5,8 @@ import './../../assets/styles/reset.css';
 
 import AuthProvider from '../../contexts/AuthProvider';
 
+import PrivateRoute from '../PrivateRoute';
+
 import Home from '../../pages/Home';
 import SignUp from '../../pages/SignUp';
 import SignIn from '../../pages/SignIn';
@@ -16,6 +18,9 @@ import RequestItems from '../../pages/RequestItems';
 import RequestItem from '../../pages/RequestItem';
 import Approvals from '../../pages/Approvals';
 import RequestItemEdit from '../../pages/RequestItemEdit';
+import Users from '../../pages/Users';
+import User from '../../pages/User';
+import AuthRoute from '../AuthRoute';
 
 function App() {
   return (
@@ -23,19 +28,23 @@ function App() {
       <BrowserRouter>
         <Routes>
 
-          <Route path='/' element={<Home/>}/>
-          <Route path='/sign-up' element={<SignUp/>}/>
-          <Route path='/sign-in' element={<SignIn/>}/>
+          <Route path='/' element={<PrivateRoute><Home/></PrivateRoute>}/>
 
-          <Route path='/expenses' element={<Expenses/>}/>
-          <Route path='/expenses/add' element={<Expense/>}/>
-
-          <Route path='/requests' element={<Requests/>}/>
-          <Route path='/requests/add' element={<Request/>}/>
+          <Route path='/sign-up'                          element={<AuthRoute><SignUp/></AuthRoute>}/>
+          <Route path='/sign-in'                          element={<AuthRoute><SignIn/></AuthRoute>}/>
+            
+          <Route path='/users'                            element={<PrivateRoute><Users/></PrivateRoute>}/>
+          <Route path='/users/:id'                        element={<PrivateRoute><User/></PrivateRoute>}/>
+            
+          <Route path='/expenses'                         element={<PrivateRoute><Expenses/></PrivateRoute>}/>
+          <Route path='/expenses/add'                     element={<PrivateRoute><Expense/></PrivateRoute>}/>
+            
+          <Route path='/requests'                         element={<PrivateRoute><Requests/></PrivateRoute>}/>
+          <Route path='/requests/add'                     element={<PrivateRoute><Request/></PrivateRoute>}/>
           
-          <Route path='/requests/:id/items' element={<RequestItems/>}/>
-          <Route path='/requests/:id/items/add' element={<RequestItem/>}/>
-          <Route path='/requests/:id/items/:itemId/edit' element={<RequestItemEdit/>}/>
+          <Route path='/requests/:id/items'               element={<PrivateRoute><RequestItems/></PrivateRoute>}/>
+          <Route path='/requests/:id/items/add'           element={<PrivateRoute><RequestItem/></PrivateRoute>}/>
+          <Route path='/requests/:id/items/:itemId/edit'  element={<PrivateRoute><RequestItemEdit/></PrivateRoute>}/>
           
           <Route path='/approvals' element={<Approvals/>}/>
 
@@ -46,3 +55,4 @@ function App() {
 }
 
 export default App;
+
